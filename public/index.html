@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fantasy Football RPG</title>
+    <style>
+        /* ESPN-inspired color scheme and design */
+        :root {
+            --primary-red: #c8102e;
+            --primary-dark: #1a1d1f;
+            --secondary-dark: #2d3134;
+            --accent-yellow: #ffb81c;
+            --text-light: #ffffff;
+            --text-gray: #99a0a3;
+            --border-color: #3d4245;
+            --success-green: #00a651;
+            --hp-red: #e03e3e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--primary-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary-red) 0%, #8b0a1e 100%);
+            padding: 1rem 2rem;
+            border-bottom: 3px solid var(--accent-yellow);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 60px;
+            width: auto;
+        }
+
+        .user-stats {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .stat-value {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .gold {
+            color: var(--accent-yellow);
+        }
+
+        .hp {
+            color: var(--hp-red);
+        }
+
+        /* Navigation */
+        .nav {
+            background-color: var(--secondary-dark);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 0;
+        }
+
+        .nav-item {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        .nav-item.active {
+            border-bottom-color: var(--primary-red);
+            background-color: rgba(200,16,46,0.1);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Team Section */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .player-card {
+            background-color: var(--secondary-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .player-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-red) 0%, var(--accent-yellow) 100%);
+        }
+
+        .player-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(200,16,46,0.3);
+            border-color: var(--primary-red);
+        }
+
+        .player-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .player-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .player-position {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .player-level {
+            background: linear-gradient(135deg, var(--accent-yellow) 0%, #ff9500 100%);
+            color: var(--primary-dark);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .xp-bar {
+            background-color: #1a1d1f;
+            height: 8px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .xp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success-green) 0%, #00d66d 100%);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .xp-text {
+            font-size: 0.75rem;
+            color: var(--text-gray);
+            margin-top: 0.25rem;
+        }
+
+        .skill-tree-preview {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .skill-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #3d4245;
+            border: 2px solid var(--border-color);
+        }
+
+        .skill-dot.active {
+            background-color: var(--primary-red);
+            border-color: var(--primary-red);
+            box-shadow: 0 0 8px var(--primary-red);
+        }
+
+        .items-equipped {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .item-slot {
+            flex: 1;
+            background-color: #1a1d1f;
+            border: 2px dashed var(--border-color);
+            border-radius: 6px;
+            padding: 0.75rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-gray);
+        }
+
+        .item-slot.filled {
+            border-style: solid;
+            border-color: var(--accent-yellow);
+            background: linear-gradient(135deg, rgba(255,184,28,0.1) 0%, rgba(255,184,28,0.05) 100%);
+            color: var(--accent-yellow);
+            font-weight: 600;
+        }
+
+        /* Store Section */
+        .store-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.6rem 1.2rem;
+            background-color: var(--secondary-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn:hover {
+            background-color: rgba(200,16,46,0.2);
+            border-color: var(--primary-red);
+        }
+
+        .filter-btn.active {
+            background-color: var(--primary-red);
+            border-color: var(--primary-red);
+        }
+
+        .store-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .store-item {
+            background-color: var(--secondary-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .store-item:hover {
+            border-color: var(--accent-yellow);
+            transform: translateY(-2px);
+        }
+
+        .store-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .item-name {
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .item-price {
+            color: var(--accent-yellow);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .item-type {
+            font-size: 0.8rem;
+            color: var(--text-gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .item-effect {
+            font-size: 0.9rem;
+            color: var(--success-green);
+            font-weight: 500;
+        }
+
+        .item-tier {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .tier-1 { background-color: rgba(100,100,100,0.3); }
+        .tier-2 { background-color: rgba(0,166,81,0.3); }
+        .tier-3 { background-color: rgba(200,16,46,0.3); }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-red) 0%, #8b0a1e 100%);
+            color: var(--text-light);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(200,16,46,0.4);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-dark);
+            color: var(--text-light);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #3d4245;
+        }
+
+        /* HP Bar */
+        .hp-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .hp-bar {
+            flex: 1;
+            background-color: #1a1d1f;
+            height: 12px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .hp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--hp-red) 0%, #ff5555 100%);
+            transition: width 0.5s ease;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-content {
+                flex-wrap: wrap;
+            }
+
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .user-stats {
+                gap: 1rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Hide sections by default */
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Check authentication on load
+        window.addEventListener('load', function() {
+            const currentUser = localStorage.getItem('ffrpg_currentUser');
+            if (!currentUser) {
+                window.location.href = 'auth.html';
+                return;
+            }
+            
+            // Check if user is in a league
+            const users = JSON.parse(localStorage.getItem('ffrpg_users') || '{}');
+            const user = users[currentUser];
+            if (!user || !user.leagueId) {
+                window.location.href = 'league.html';
+            }
+        });
+
+        // Mock data for demonstration
+        const mockPlayers = [
+            {
+                id: 1,
+                name: "James Cook",
+                position: "RB",
+                team: "BUF",
+                level: 3,
+                xp: 120,
+                xpToNext: 150,
+                skillPoints: { td: 2, yardage: 1, receptions: 0 },
+                items: ["Elite Cleats", null],
+                weeklyPoints: 24.5
+            },
+            {
+                id: 2,
+                name: "CeeDee Lamb",
+                position: "WR",
+                team: "DAL",
+                level: 4,
+                xp: 180,
+                xpToNext: 200,
+                skillPoints: { td: 1, yardage: 2, receptions: 1 },
+                items: ["Pro Gloves", "Speed Helmet"],
+                weeklyPoints: 28.3
+            },
+            {
+                id: 3,
+                name: "Josh Allen",
+                position: "QB",
+                team: "BUF",
+                level: 5,
+                xp: 250,
+                xpToNext: 250,
+                skillPoints: { td: 2, yardage: 2, receptions: 1 },
+                items: [null, null],
+                weeklyPoints: 32.1
+            }
+        ];
+
+        const mockStoreItems = [
+            { id: 1, name: "Elite Cleats", type: "Cleats", position: "Any", tier: 3, cost: 750, effect: "Net Scoring +12.5%" },
+            { id: 2, name: "Pro Gloves", type: "Gloves", position: "Receiver", tier: 2, cost: 300, effect: "TDs +20%" },
+            { id: 3, name: "Speed Helmet", type: "Helmet", position: "Any", tier: 2, cost: 425, effect: "Yardage +15%" },
+            { id: 4, name: "Power Pads", type: "Pads", position: "Rusher", tier: 1, cost: 175, effect: "Yardage +7.5%" },
+            { id: 5, name: "Precision Jersey", type: "Jersey", position: "Passer", tier: 2, cost: 400, effect: "Yardage +15%" },
+            { id: 6, name: "Gatorade", type: "Consumable", position: "Any", tier: 1, cost: 150, effect: "Restore 50 HP" },
+        ];
+
+        // League Info Component - always reads fresh data from localStorage
+        function LeagueInfo() {
+            const [info, setInfo] = React.useState({ league: null, isCommissioner: false });
+
+            React.useEffect(() => {
+                const loadData = () => {
+                    try {
+                        const userEmail = localStorage.getItem('ffrpg_currentUser');
+                        if (!userEmail) return;
+
+                        const users = JSON.parse(localStorage.getItem('ffrpg_users') || '{}');
+                        const user = users[userEmail];
+                        
+                        if (user && user.leagueId) {
+                            const leagues = JSON.parse(localStorage.getItem('ffrpg_leagues') || '{}');
+                            const league = leagues[user.leagueId];
+                            
+                            if (league) {
+                                setInfo({
+                                    league: league,
+                                    isCommissioner: user.email === league.commissioner
+                                });
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Error loading league info:', e);
+                    }
+                };
+
+                loadData();
+                const interval = setInterval(loadData, 1000); // Check every second
+                
+                return () => clearInterval(interval);
+            }, []);
+
+            if (!info.league) {
+                return React.createElement('div', {
+                    style: {
+                        marginLeft: 'auto',
+                        color: 'var(--text-gray)',
+                        fontSize: '0.85rem',
+                        padding: '1rem'
+                    }
+                }, 'Loading league...');
+            }
+
+            return React.createElement('div', {
+                style: {
+                    marginLeft: 'auto',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '1rem'
+                }
+            }, [
+                React.createElement('div', {
+                    key: 'league-name',
+                    style: {
+                        color: 'var(--text-gray)',
+                        fontSize: '0.85rem'
+                    }
+                }, `🏆 ${info.league.name} (${info.league.members.length}/${info.league.size})`),
+                
+                info.isCommissioner ? React.createElement('a', {
+                    key: 'settings-link',
+                    href: 'league-settings.html',
+                    style: {
+                        padding: '0.5rem 1rem',
+                        backgroundColor: 'var(--secondary-dark)',
+                        border: '1px solid var(--border-color)',
+                        borderRadius: '6px',
+                        color: 'var(--text-light)',
+                        textDecoration: 'none',
+                        fontSize: '0.85rem',
+                        transition: 'all 0.2s'
+                    },
+                    onMouseOver: (e) => e.target.style.borderColor = 'var(--primary-red)',
+                    onMouseOut: (e) => e.target.style.borderColor = 'var(--border-color)'
+                }, '⚙️ Settings') : null
+            ]);
+        }
+
+        function App() {
+            const [activeTab, setActiveTab] = useState('team');
+            const [currentUser, setCurrentUser] = useState(null);
+            const [currentLeague, setCurrentLeague] = useState(null);
+            const [gold, setGold] = useState(450);
+            const [hp, setHp] = useState(180);
+            const [maxHp] = useState(250);
+            const [players] = useState(mockPlayers);
+            const [storeFilter, setStoreFilter] = useState('all');
+
+            // Load user data
+            useEffect(() => {
+                const userEmail = localStorage.getItem('ffrpg_currentUser');
+                if (userEmail) {
+                    const users = JSON.parse(localStorage.getItem('ffrpg_users') || '{}');
+                    const user = users[userEmail];
+                    if (user) {
+                        setCurrentUser(user);
+                        setGold(user.gold || 0);
+                        setHp(user.hp || 250);
+                        
+                        // Load league data
+                        if (user.leagueId) {
+                            const leagues = JSON.parse(localStorage.getItem('ffrpg_leagues') || '{}');
+                            const league = leagues[user.leagueId];
+                            if (league) {
+                                setCurrentLeague(league);
+                            }
+                        }
+                    }
+                }
+            }, []);
+
+            // Force re-check league data when window gains focus (user returns from settings)
+            useEffect(() => {
+                const handleFocus = () => {
+                    const userEmail = localStorage.getItem('ffrpg_currentUser');
+                    if (userEmail) {
+                        const users = JSON.parse(localStorage.getItem('ffrpg_users') || '{}');
+                        const user = users[userEmail];
+                        if (user && user.leagueId) {
+                            const leagues = JSON.parse(localStorage.getItem('ffrpg_leagues') || '{}');
+                            const league = leagues[user.leagueId];
+                            if (league) {
+                                setCurrentLeague(league);
+                                setCurrentUser(user);
+                            }
+                        }
+                    }
+                };
+
+                window.addEventListener('focus', handleFocus);
+                return () => window.removeEventListener('focus', handleFocus);
+            }, []);
+
+            const handleLogout = () => {
+                if (confirm('Are you sure you want to logout?')) {
+                    localStorage.removeItem('ffrpg_currentUser');
+                    window.location.href = 'auth.html';
+                }
+            };
+
+            const filteredItems = storeFilter === 'all' 
+                ? mockStoreItems 
+                : mockStoreItems.filter(item => item.tier === parseInt(storeFilter));
+
+            return (
+                <>
+                    <header className="header">
+                        <div className="header-content">
+                            <div className="logo">
+                                <img src="FF_RPG_Logo.png" alt="Fantasy Football RPG" />
+                            </div>
+                            <div className="user-stats">
+                                {currentUser && (
+                                    <div className="stat-item">
+                                        <span>👤</span>
+                                        <div>
+                                            <div style={{fontSize: '0.75rem', color: 'var(--text-gray)'}}>Team</div>
+                                            <div className="stat-value">{currentUser.name}</div>
+                                        </div>
+                                    </div>
+                                )}
+                                <div className="stat-item">
+                                    <span>💰</span>
+                                    <div>
+                                        <div style={{fontSize: '0.75rem', color: 'var(--text-gray)'}}>Gold</div>
+                                        <div className="stat-value gold">{gold}</div>
+                                    </div>
+                                </div>
+                                <div className="stat-item hp-container">
+                                    <span>❤️</span>
+                                    <div style={{flex: 1}}>
+                                        <div style={{fontSize: '0.75rem', color: 'var(--text-gray)', marginBottom: '0.25rem'}}>
+                                            HP: {hp}/{maxHp}
+                                        </div>
+                                        <div className="hp-bar">
+                                            <div className="hp-fill" style={{width: `${(hp/maxHp)*100}%`}}></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button 
+                                    onClick={handleLogout}
+                                    className="btn btn-secondary"
+                                    style={{padding: '0.5rem 1rem', fontSize: '0.85rem'}}
+                                >
+                                    Logout
+                                </button>
+                            </div>
+                        </div>
+                    </header>
+
+                    <nav className="nav">
+                        <div className="nav-content">
+                            <div 
+                                className={`nav-item ${activeTab === 'team' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('team')}
+                            >
+                                My Team
+                            </div>
+                            <div 
+                                className={`nav-item ${activeTab === 'store' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('store')}
+                            >
+                                Item Store
+                            </div>
+                            <div 
+                                className={`nav-item ${activeTab === 'standings' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('standings')}
+                            >
+                                Standings
+                            </div>
+                            <LeagueInfo />
+                        </div>
+                    </nav>
+
+                    <div className="container">
+                        {/* Team Section */}
+                        <div className={`section ${activeTab === 'team' ? 'active' : ''}`}>
+                            <div className="section-header">
+                                <h2 className="section-title">My Team</h2>
+                                <button className="btn btn-primary">Set Lineup</button>
+                            </div>
+
+                            <div className="team-grid">
+                                {players.map(player => (
+                                    <div key={player.id} className="player-card">
+                                        <div className="player-header">
+                                            <div>
+                                                <div className="player-name">{player.name}</div>
+                                                <div className="player-position">{player.position} • {player.team}</div>
+                                            </div>
+                                            <div className="player-level">LVL {player.level}</div>
+                                        </div>
+
+                                        <div className="xp-bar">
+                                            <div className="xp-fill" style={{width: `${(player.xp/player.xpToNext)*100}%`}}></div>
+                                        </div>
+                                        <div className="xp-text">{player.xp} / {player.xpToNext} XP</div>
+
+                                        <div className="skill-tree-preview">
+                                            <div style={{fontSize: '0.75rem', color: 'var(--text-gray)', marginRight: '0.5rem'}}>TD:</div>
+                                            {[...Array(5)].map((_, i) => (
+                                                <div key={`td-${i}`} className={`skill-dot ${i < player.skillPoints.td ? 'active' : ''}`}></div>
+                                            ))}
+                                        </div>
+
+                                        <div className="skill-tree-preview">
+                                            <div style={{fontSize: '0.75rem', color: 'var(--text-gray)', marginRight: '0.5rem'}}>YD:</div>
+                                            {[...Array(5)].map((_, i) => (
+                                                <div key={`yd-${i}`} className={`skill-dot ${i < player.skillPoints.yardage ? 'active' : ''}`}></div>
+                                            ))}
+                                        </div>
+
+                                        <div className="skill-tree-preview">
+                                            <div style={{fontSize: '0.75rem', color: 'var(--text-gray)', marginRight: '0.5rem'}}>REC:</div>
+                                            {[...Array(5)].map((_, i) => (
+                                                <div key={`rec-${i}`} className={`skill-dot ${i < player.skillPoints.receptions ? 'active' : ''}`}></div>
+                                            ))}
+                                        </div>
+
+                                        <div className="items-equipped">
+                                            <div className={`item-slot ${player.items[0] ? 'filled' : ''}`}>
+                                                {player.items[0] || 'Empty Slot'}
+                                            </div>
+                                            <div className={`item-slot ${player.items[1] ? 'filled' : ''}`}>
+                                                {player.items[1] || 'Empty Slot'}
+                                            </div>
+                                        </div>
+
+                                        <div style={{marginTop: '1rem', textAlign: 'center', color: 'var(--text-gray)'}}>
+                                            Last Week: <span style={{color: 'var(--success-green)', fontWeight: 'bold'}}>{player.weeklyPoints} pts</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Store Section */}
+                        <div className={`section ${activeTab === 'store' ? 'active' : ''}`}>
+                            <div className="section-header">
+                                <h2 className="section-title">Item Store</h2>
+                            </div>
+
+                            <div className="store-filters">
+                                <button 
+                                    className={`filter-btn ${storeFilter === 'all' ? 'active' : ''}`}
+                                    onClick={() => setStoreFilter('all')}
+                                >
+                                    All Items
+                                </button>
+                                <button 
+                                    className={`filter-btn ${storeFilter === '1' ? 'active' : ''}`}
+                                    onClick={() => setStoreFilter('1')}
+                                >
+                                    Tier 1
+                                </button>
+                                <button 
+                                    className={`filter-btn ${storeFilter === '2' ? 'active' : ''}`}
+                                    onClick={() => setStoreFilter('2')}
+                                >
+                                    Tier 2
+                                </button>
+                                <button 
+                                    className={`filter-btn ${storeFilter === '3' ? 'active' : ''}`}
+                                    onClick={() => setStoreFilter('3')}
+                                >
+                                    Tier 3
+                                </button>
+                            </div>
+
+                            <div className="store-grid">
+                                {filteredItems.map(item => (
+                                    <div key={item.id} className="store-item">
+                                        <div className="store-item-header">
+                                            <div className="item-name">{item.name}</div>
+                                            <div className="item-price">{item.cost}g</div>
+                                        </div>
+                                        <div className="item-type">{item.type} • {item.position}</div>
+                                        <div className="item-effect">{item.effect}</div>
+                                        <div className={`item-tier tier-${item.tier}`}>
+                                            Tier {item.tier}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Standings Section */}
+                        <div className={`section ${activeTab === 'standings' ? 'active' : ''}`}>
+                            <div className="section-header">
+                                <h2 className="section-title">League Standings</h2>
+                            </div>
+                            <div style={{padding: '2rem', textAlign: 'center', color: 'var(--text-gray)'}}>
+                                Standings feature coming soon...
+                            </div>
+                        </div>
+                    </div>
+                </>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
