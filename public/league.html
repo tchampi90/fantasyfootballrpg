@@ -594,9 +594,23 @@
         document.getElementById('createLeagueForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const leagueName = document.getElementById('leagueName').value.trim();
-            const leagueSize = parseInt(document.getElementById('leagueSize').value);
-            const draftOrderType = document.getElementById('draftOrderType').value;
+            const leagueNameEl = document.getElementById('leagueName');
+            const leagueSizeEl = document.getElementById('leagueSize');
+            const draftOrderTypeEl = document.getElementById('draftOrderType');
+
+            if (!leagueNameEl || !leagueSizeEl || !draftOrderTypeEl) {
+                console.error('Form elements not found!', {
+                    leagueName: !!leagueNameEl,
+                    leagueSize: !!leagueSizeEl,
+                    draftOrderType: !!draftOrderTypeEl
+                });
+                showError('createError', 'Form error - please refresh the page');
+                return;
+            }
+            
+            const leagueName = leagueNameEl.value.trim();
+            const leagueSize = parseInt(leagueSizeEl.value);
+            const draftOrderType = draftOrderTypeEl.value;
 
             if (!leagueSize) {
                 showError('createError', 'Please select a league size!');
@@ -650,7 +664,14 @@
         document.getElementById('joinLeagueForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const leagueCode = document.getElementById('joinCode').value.trim().toUpperCase();
+            const joinCodeEl = document.getElementById('joinCode');
+            if (!joinCodeEl) {
+                console.error('Join code element not found!');
+                showError('joinError', 'Form error - please refresh the page');
+                return;
+            }
+            
+            const leagueCode = joinCodeEl.value.trim().toUpperCase();
 
             if (leagueCode.length !== 6) {
                 showError('joinError', 'League code must be 6 characters!');
