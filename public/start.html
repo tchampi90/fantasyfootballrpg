@@ -27,9 +27,16 @@
             color: var(--text-light);
             min-height: 100vh;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
-            padding: 2rem;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        @media (min-height: 900px) {
+            body {
+                align-items: center;
+            }
         }
 
         .container {
@@ -37,8 +44,16 @@
             background-color: var(--secondary-dark);
             border: 1px solid var(--border-color);
             border-radius: 16px;
-            padding: 3rem;
+            padding: 2rem 1.5rem;
             box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            margin: auto;
+            width: 100%;
+        }
+
+        @media (min-width: 600px) {
+            .container {
+                padding: 3rem;
+            }
         }
 
         .logo-container {
