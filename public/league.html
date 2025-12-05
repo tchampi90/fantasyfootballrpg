@@ -551,6 +551,36 @@
             setTimeout(() => errorEl.classList.remove('show'), 5000);
         }
 
+        let selectedSize = null;
+
+        function showChoice() {
+            document.getElementById('choiceSection').style.display = 'block';
+            document.getElementById('createLeagueSection').classList.remove('active');
+            document.getElementById('joinLeagueSection').classList.remove('active');
+            document.getElementById('successSection').classList.remove('active');
+        }
+
+        function showCreateLeague() {
+            document.getElementById('choiceSection').style.display = 'none';
+            document.getElementById('createLeagueSection').classList.add('active');
+        }
+
+        function showJoinLeague() {
+            document.getElementById('choiceSection').style.display = 'none';
+            document.getElementById('joinLeagueSection').classList.add('active');
+        }
+
+        function selectSize(size) {
+            selectedSize = size;
+            document.getElementById('leagueSize').value = size;
+            
+            // Update UI
+            document.querySelectorAll('.size-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            event.target.closest('.size-option').classList.add('selected');
+        }
+
         function generateLeagueCode() {
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             let code = '';
