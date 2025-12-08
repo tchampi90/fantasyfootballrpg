@@ -3,7 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>League Setup - Fantasy Football RPG</title>
+    <title>League Setup - Fantasy Football RPG</title>    
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192x192.png">
+    <meta name="msapplication-TileImage" content="assets/windows-tile-144x144.png">
+    <meta name="theme-color" content="#1a1d1f">
+    <link rel="manifest" href="site.webmanifest">
     
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -361,7 +370,7 @@
     <header class="header">
         <div class="header-content">
             <div class="logo">
-                <img id="logo" src="" alt="Fantasy Football RPG">
+                <img src="assets/FF_RPG_Logo_Helmet.png" alt="Fantasy Football RPG">
             </div>
             <div class="user-info">
                 <span id="userName"></span>
@@ -551,36 +560,6 @@
             setTimeout(() => errorEl.classList.remove('show'), 5000);
         }
 
-        let selectedSize = null;
-
-        function showChoice() {
-            document.getElementById('choiceSection').style.display = 'block';
-            document.getElementById('createLeagueSection').classList.remove('active');
-            document.getElementById('joinLeagueSection').classList.remove('active');
-            document.getElementById('successSection').classList.remove('active');
-        }
-
-        function showCreateLeague() {
-            document.getElementById('choiceSection').style.display = 'none';
-            document.getElementById('createLeagueSection').classList.add('active');
-        }
-
-        function showJoinLeague() {
-            document.getElementById('choiceSection').style.display = 'none';
-            document.getElementById('joinLeagueSection').classList.add('active');
-        }
-
-        function selectSize(size) {
-            selectedSize = size;
-            document.getElementById('leagueSize').value = size;
-            
-            // Update UI
-            document.querySelectorAll('.size-option').forEach(option => {
-                option.classList.remove('selected');
-            });
-            event.target.closest('.size-option').classList.add('selected');
-        }
-
         function generateLeagueCode() {
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             let code = '';
@@ -594,23 +573,9 @@
         document.getElementById('createLeagueForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const leagueNameEl = document.getElementById('leagueName');
-            const leagueSizeEl = document.getElementById('leagueSize');
-            const draftOrderTypeEl = document.getElementById('draftOrderType');
-
-            if (!leagueNameEl || !leagueSizeEl || !draftOrderTypeEl) {
-                console.error('Form elements not found!', {
-                    leagueName: !!leagueNameEl,
-                    leagueSize: !!leagueSizeEl,
-                    draftOrderType: !!draftOrderTypeEl
-                });
-                showError('createError', 'Form error - please refresh the page');
-                return;
-            }
-            
-            const leagueName = leagueNameEl.value.trim();
-            const leagueSize = parseInt(leagueSizeEl.value);
-            const draftOrderType = draftOrderTypeEl.value;
+            const leagueName = document.getElementById('leagueName').value.trim();
+            const leagueSize = parseInt(document.getElementById('leagueSize').value);
+            const draftOrderType = document.getElementById('draftOrderType').value;
 
             if (!leagueSize) {
                 showError('createError', 'Please select a league size!');
@@ -664,14 +629,7 @@
         document.getElementById('joinLeagueForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const joinCodeEl = document.getElementById('joinCode');
-            if (!joinCodeEl) {
-                console.error('Join code element not found!');
-                showError('joinError', 'Form error - please refresh the page');
-                return;
-            }
-            
-            const leagueCode = joinCodeEl.value.trim().toUpperCase();
+            const leagueCode = document.getElementById('joinCode').value.trim().toUpperCase();
 
             if (leagueCode.length !== 6) {
                 showError('joinError', 'League code must be 6 characters!');
